@@ -1,0 +1,20 @@
+from rest_framework import serializers
+from .models import TransactionType
+
+class TransactionTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TransactionType
+        fields = '__all__'
+
+    def create(self, validated_data):
+        return TransactionType.objects.create(**validated_data)
+
+    def update(self, instance, validated_data):
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+        return instance
+
+    def delete(self, instance):
+        instance.delete()
+        return None
