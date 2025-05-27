@@ -6,5 +6,13 @@ class Category(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        permissions = [
+            ("can_view_category", "Can view category"),
+            ("can_add_category", "Can add category"),
+            ("can_edit_category", "Can edit category"),
+            ("can_delete_category", "Can delete category"),
+        ]
+
     def __str__(self):
         return self.name

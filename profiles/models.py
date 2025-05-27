@@ -1,6 +1,14 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+ROLE_CHOICES = [
+    ('unauthorized_customer', 'Unauthorized Customer'),
+    ('authorized_customer', 'Authorized Customer'),
+    ('shipper', 'Shipper/Logistic Partner'),
+    ('order_tracker', 'Orders Tracker'),
+    ('admin', 'Admin'),
+]
+
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     first_name = models.CharField(max_length=100, blank=True)
@@ -9,6 +17,7 @@ class Profile(models.Model):
     is_admin = models.BooleanField(default=False)
     profile_image = models.ImageField(upload_to='profile_images/', null=True, blank=True)
     timestamp = models.DateTimeField(auto_now_add=True)
+    role = models.CharField(max_length=32, choices=ROLE_CHOICES, default='unauthorized_customer')
 
     @property
     def full_name(self):

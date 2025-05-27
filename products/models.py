@@ -20,3 +20,11 @@ class Product(models.Model):
         inbound = Transaction.objects.filter(product=self, transaction_type__id=1).aggregate(models.Sum('quantity'))['quantity__sum'] or 0
         outbound = Transaction.objects.filter(product=self, transaction_type__id=2).aggregate(models.Sum('quantity'))['quantity__sum'] or 0
         return inbound - outbound
+
+    class Meta:
+        permissions = [
+            ("can_view_product", "Can view product"),
+            ("can_add_product", "Can add product"),
+            ("can_edit_product", "Can edit product"),
+            ("can_delete_product", "Can delete product"),
+        ]

@@ -10,5 +10,13 @@ class ProductComment(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        permissions = [
+            ("can_view_product_comment", "Can view product comment"),
+            ("can_add_product_comment", "Can add product comment"),
+            ("can_edit_product_comment", "Can edit product comment"),
+            ("can_delete_product_comment", "Can delete product comment"),
+        ]
+
     def __str__(self):
         return f"Comment by {self.user} on {self.product}""

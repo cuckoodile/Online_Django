@@ -8,3 +8,11 @@ class ImageUpload(models.Model):
 
     def __str__(self):
         return f'{self.img}'
+
+    class Meta:
+        permissions = [
+            ("can_view_product_image", "Can view product image"),
+            ("can_add_product_image", "Can add product image"),
+            ("can_edit_product_image", "Can edit product image"),
+            ("can_delete_product_image", "Can delete product image"),
+        ]
