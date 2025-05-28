@@ -21,8 +21,14 @@ from rest_framework_simplejwt.views import (
     TokenRefreshView,
 )
 
+# API URL Endpoints
+from products.views import ProductView
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+
+    # API Endpoints
+    path('api/products/', ProductView.as_view()),
 ]

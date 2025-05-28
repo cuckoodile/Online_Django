@@ -4,10 +4,10 @@ from django.shortcuts import render
 from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .models import Product
 from rest_framework.parsers import FormParser , MultiPartParser
+from .models import Product
 from .serializers import ProductGetSerializer , ProductSerializer
-from imageupload.serializers import ImageSerializer
+from product_image.serializers import ImageSerializer
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
 # Create your views here.

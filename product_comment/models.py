@@ -1,4 +1,6 @@
 from django.db import models
+from django.contrib.auth.models import User
+from products.models import Product
 
 # Create your models here.
 class ProductComment(models.Model):
@@ -19,4 +21,4 @@ class ProductComment(models.Model):
         ]
 
     def __str__(self):
-        return f"Comment by {self.user} on {self.product}""
+        return f"Comment by {self.user} on {self.product}: {self.comment[:20]}"

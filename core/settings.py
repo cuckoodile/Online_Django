@@ -40,11 +40,14 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'rest_framework',
     'corsheaders',
+
+    # Tables
     'profiles',
     'address',
     'categories',
     'products',
     'product_image',
+    'product_comment',
     'transaction_type',
     'transaction_method',
     'transaction_status',
