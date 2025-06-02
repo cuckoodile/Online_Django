@@ -16,8 +16,8 @@ class Profile(models.Model):
     contact_number = models.CharField(max_length=20, blank=True)
     is_admin = models.BooleanField(default=False)
     profile_image = models.ImageField(upload_to='profile_images/', null=True, blank=True)
-    timestamp = models.DateTimeField(auto_now_add=True)
-    role = models.CharField(max_length=32, choices=ROLE_CHOICES, default='unauthorized_customer')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     @property
     def full_name(self):

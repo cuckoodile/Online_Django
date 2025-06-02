@@ -3,10 +3,10 @@ from .models import Transaction
 
 class TransactionSerializer(serializers.ModelSerializer):
     status_name = serializers.CharField(source='status.name', read_only=True)
-    transaction_type_name = serializers.CharField(source='transaction_type.name', read_only=True)
     payment_method_name = serializers.CharField(source='payment_method.name', read_only=True)
     user_email = serializers.EmailField(source='user.email', read_only=True)
     user_username = serializers.CharField(source='user.username', read_only=True)
+    type_name = serializers.CharField(source='type.name', read_only=True)
 
     class Meta:
         model = Transaction
@@ -19,8 +19,8 @@ class TransactionSerializer(serializers.ModelSerializer):
             'user_username',
             'payment_method',
             'payment_method_name',
-            'transaction_type',
-            'transaction_type_name',
+            'type',
+            'type_name',
             'address',
             'amount',
             'reference',

@@ -47,10 +47,6 @@ INSTALLED_APPS = [
     'categories',
     'products',
     'product_image',
-    'product_comment',
-    'transaction_type',
-    'transaction_method',
-    'transaction_status',
     'transactions',
 ]
 
