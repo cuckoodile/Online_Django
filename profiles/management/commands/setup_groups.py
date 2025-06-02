@@ -3,7 +3,7 @@ from django.contrib.auth.models import Group, Permission
 from django.apps import apps
 
 ROLE_GROUPS = {
-    'Authorized Customer': [
+    'Customer': [
         'products.view_product',
         'product_review.can_view_product_review',
         'product_review.can_add_product_review',

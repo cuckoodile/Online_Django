@@ -2,8 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 
 ROLE_CHOICES = [
-    ('unauthorized_customer', 'Unauthorized Customer'),
-    ('authorized_customer', 'Authorized Customer'),
+    ('customer', 'Customer'),
     ('shipper', 'Shipper/Logistic Partner'),
     ('order_tracker', 'Orders Tracker'),
     ('admin', 'Admin'),
@@ -14,10 +13,10 @@ class Profile(models.Model):
     first_name = models.CharField(max_length=100, blank=True)
     last_name = models.CharField(max_length=100, blank=True)
     contact_number = models.CharField(max_length=20, blank=True)
-    is_admin = models.BooleanField(default=False)
     profile_image = models.ImageField(upload_to='profile_images/', null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    role = models.CharField(max_length=32, choices=ROLE_CHOICES)
 
     @property
     def full_name(self):
