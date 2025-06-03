@@ -41,6 +41,14 @@ class Product(models.Model):
     def __str__(self):
         return self.name
 
+    class Meta:
+        permissions = [
+            ("can_view_product", "Can view product"),
+            ("can_add_product", "Can add product"),
+            ("can_edit_product", "Can edit product"),
+            ("can_delete_product", "Can delete product"),
+        ]
+
 class ProductComment(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='comments')
     user = models.ForeignKey(User, on_delete=models.CASCADE)

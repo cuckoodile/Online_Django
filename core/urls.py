@@ -8,7 +8,12 @@ from rest_framework_simplejwt.views import TokenVerifyView
 from .views import UserView
 
 # API URL Endpoints
-from products.views import ProductListView, ProductCreateView, ProductRetrieveUpdateDeleteView
+from product.views import (
+    ProductListView, ProductCreateView, ProductRetrieveUpdateDeleteView,
+    ProductCommentListView, ProductCommentCreateView, ProductCommentRetrieveUpdateDeleteView,
+    SpecificationListView, SpecificationCreateView, SpecificationRetrieveUpdateDeleteView,
+    ProductReviewListView, ProductReviewCreateView, ProductReviewRetrieveUpdateDeleteView
+)
 from address.views import AddressListView, AddressDetailView, AddressCreateView
 from cart.views import CartListView, CartDetailView, CartCreateView
 from categories.views import CategoryListCreateView, CategoryDetailView
@@ -26,6 +31,20 @@ urlpatterns = [
     path('api/products/', ProductListView.as_view()),
     path('api/products/create/', ProductCreateView.as_view(), name='product-create'),
     path('api/products/<int:pk>/', ProductRetrieveUpdateDeleteView.as_view(), name='product-detail'),
+    # ProductComment endpoints
+    path('product-comments/', ProductCommentListView.as_view(), name='productcomment-list'),
+    path('product-comments/create/', ProductCommentCreateView.as_view(), name='productcomment-create'),
+    path('product-comments/<int:pk>/', ProductCommentRetrieveUpdateDeleteView.as_view(), name='productcomment-detail'),
+
+    # Specification endpoints
+    path('specifications/', SpecificationListView.as_view(), name='specification-list'),
+    path('specifications/create/', SpecificationCreateView.as_view(), name='specification-create'),
+    path('specifications/<int:pk>/', SpecificationRetrieveUpdateDeleteView.as_view(), name='specification-detail'),
+
+    # ProductReview endpoints
+    path('product-reviews/', ProductReviewListView.as_view(), name='productreview-list'),
+    path('product-reviews/create/', ProductReviewCreateView.as_view(), name='productreview-create'),
+    path('product-reviews/<int:pk>/', ProductReviewRetrieveUpdateDeleteView.as_view(), name='productreview-detail'),
     # API Endpoints for Addresses
     path('api/addresses/', AddressListView.as_view(), name='address-list-create'),
     path('api/addresses/create/', AddressCreateView.as_view(), name='address-create'),
