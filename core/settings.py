@@ -48,9 +48,6 @@ INSTALLED_APPS = [
     'address',
     'categories',
     'products',
-    'product_review',
-    'product_comment',
-    'product_specification',
     'product_image',
     'transactions',
 ]

@@ -2,7 +2,7 @@ from rest_framework import serializers
 from .models import Product, ProductComment, Specification
 from product_image.serializers import ImageSerializer
 from transactions.models import Transaction, ProductTransaction
-from product_review.models import ProductReview
+# from product_review.models import ProductReview
 
 class ProductSerializer(serializers.ModelSerializer):
     stock = serializers.IntegerField(write_only=True, required=False)
@@ -65,21 +65,21 @@ class SpecificationSerializer(serializers.ModelSerializer):
         model = Specification
         fields = '__all__'
 
-class ProductReviewSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ProductReview
-        fields = '__all__'
+# class ProductReviewSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = ProductReview
+#         fields = '__all__'
         
-    def create(self, validated_data):
-        return ProductReview.objects.create(**validated_data)
-    def update(self, instance, validated_data):
-        for attr, value in validated_data.items():
-            setattr(instance, attr, value)
-        instance.save()
-        return instance
-    def delete(self, instance):
-        instance.delete()
-        return None
+#     def create(self, validated_data):
+#         return ProductReview.objects.create(**validated_data)
+#     def update(self, instance, validated_data):
+#         for attr, value in validated_data.items():
+#             setattr(instance, attr, value)
+#         instance.save()
+#         return instance
+#     def delete(self, instance):
+#         instance.delete()
+#         return None
 
 class ProductCommentSerializer(serializers.ModelSerializer):
     class Meta:

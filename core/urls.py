@@ -8,11 +8,11 @@ from rest_framework_simplejwt.views import TokenVerifyView
 from .views import UserView
 
 # API URL Endpoints
-from product.views import (
+from products.views import (
     ProductListView, ProductCreateView, ProductRetrieveUpdateDeleteView,
     ProductCommentListView, ProductCommentCreateView, ProductCommentRetrieveUpdateDeleteView,
     SpecificationListView, SpecificationCreateView, SpecificationRetrieveUpdateDeleteView,
-    ProductReviewListView, ProductReviewCreateView, ProductReviewRetrieveUpdateDeleteView
+    # ProductReviewListView, ProductReviewCreateView, ProductReviewRetrieveUpdateDeleteView
 )
 from address.views import AddressListView, AddressDetailView, AddressCreateView
 from cart.views import CartListView, CartDetailView, CartCreateView
@@ -42,9 +42,9 @@ urlpatterns = [
     path('specifications/<int:pk>/', SpecificationRetrieveUpdateDeleteView.as_view(), name='specification-detail'),
 
     # ProductReview endpoints
-    path('product-reviews/', ProductReviewListView.as_view(), name='productreview-list'),
-    path('product-reviews/create/', ProductReviewCreateView.as_view(), name='productreview-create'),
-    path('product-reviews/<int:pk>/', ProductReviewRetrieveUpdateDeleteView.as_view(), name='productreview-detail'),
+    # path('product-reviews/', ProductReviewListView.as_view(), name='productreview-list'),
+    # path('product-reviews/create/', ProductReviewCreateView.as_view(), name='productreview-create'),
+    # path('product-reviews/<int:pk>/', ProductReviewRetrieveUpdateDeleteView.as_view(), name='productreview-detail'),
     # API Endpoints for Addresses
     path('api/addresses/', AddressListView.as_view(), name='address-list-create'),
     path('api/addresses/create/', AddressCreateView.as_view(), name='address-create'),

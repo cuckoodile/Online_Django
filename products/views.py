@@ -4,8 +4,8 @@ from rest_framework import viewsets
 
 from rest_framework.parsers import FormParser , MultiPartParser
 from .models import Product, ProductComment, Specification
-from product_review.models import ProductReview
-from .serializers import ProductGetSerializer , ProductSerializer , ProductCommentSerializer, SpecificationSerializer, ProductReviewSerializer
+# from product_review.models import ProductReview
+from .serializers import ProductGetSerializer , ProductSerializer , ProductCommentSerializer, SpecificationSerializer
 from product_image.serializers import ImageSerializer
 from rest_framework.permissions import IsAuthenticated
 from profiles.permissions import IsAdminGroup, IsCustomerGroup, IsShipperGroup, IsOrderTrackerGroup
@@ -107,33 +107,33 @@ class SpecificationRetrieveUpdateDeleteView(RetrieveUpdateDestroyAPIView):
         return Specification.objects.get(pk=self.kwargs['pk'])
 
 
-class ProductReviewListView(ListAPIView):
-    queryset = ProductReview.objects.all().order_by('-id')
-    serializer_class = ProductReviewSerializer
-    permission_classes = [IsAuthenticated]
+# class ProductReviewListView(ListAPIView):
+#     queryset = ProductReview.objects.all().order_by('-id')
+#     serializer_class = ProductReviewSerializer
+#     permission_classes = [IsAuthenticated]
 
-class ProductReviewCreateView(CreateAPIView):
-    queryset = ProductReview.objects.all()
-    serializer_class = ProductReviewSerializer
-    permission_classes = [IsCustomerGroup, IsAuthenticated]
+# class ProductReviewCreateView(CreateAPIView):
+#     queryset = ProductReview.objects.all()
+#     serializer_class = ProductReviewSerializer
+#     permission_classes = [IsCustomerGroup, IsAuthenticated]
 
-    def perform_create(self, serializer):
-        product = self.request.data.get('product')
-        user = self.request.data.get('user')
-        rating = self.request.data.get('rating')
-        review = self.request.data.get('review')
+#     def perform_create(self, serializer):
+#         product = self.request.data.get('product')
+#         user = self.request.data.get('user')
+#         rating = self.request.data.get('rating')
+#         review = self.request.data.get('review')
 
-        if product and user and rating is not None and review:
-            product_review_instance = serializer.save(product_id=product, user_id=user, rating=rating, review=review)
-            return product_review_instance
-        else:
-            raise ValueError("Product, User, Rating, and Review are required fields.")
+#         if product and user and rating is not None and review:
+#             product_review_instance = serializer.save(product_id=product, user_id=user, rating=rating, review=review)
+#             return product_review_instance
+#         else:
+#             raise ValueError("Product, User, Rating, and Review are required fields.")
 
-class ProductReviewRetrieveUpdateDeleteView(RetrieveUpdateDestroyAPIView):
-    queryset = ProductReview.objects.all()
-    serializer_class = ProductReviewSerializer
-    permission_classes = [IsCustomerGroup, IsAuthenticated]
+# class ProductReviewRetrieveUpdateDeleteView(RetrieveUpdateDestroyAPIView):
+#     queryset = ProductReview.objects.all()
+#     serializer_class = ProductReviewSerializer
+#     permission_classes = [IsCustomerGroup, IsAuthenticated]
 
-    def get_object(self):
-        from .models import ProductReview
-        return ProductReview.objects.get(pk=self.kwargs['pk'])
+#     def get_object(self):
+#         from .models import ProductReview
+#         return ProductReview.objects.get(pk=self.kwargs['pk'])
