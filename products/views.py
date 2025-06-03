@@ -1,44 +1,51 @@
 from django.shortcuts import render
+from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView,CreateAPIView
 
-# Create your views here.
-from django.shortcuts import render
-from rest_framework.response import Response
-from rest_framework.views import APIView
 from rest_framework.parsers import FormParser , MultiPartParser
 from .models import Product
 from .serializers import ProductGetSerializer , ProductSerializer
 from product_image.serializers import ImageSerializer
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAuthenticated
+from profiles.permissions import IsAdminGroup
 
 # Create your views here.
-class ProductView(APIView):
-    parser_classes = [FormParser , MultiPartParser]
-    permission_classes = [IsAuthenticatedOrReadOnly]
+class ProductListView(ListAPIView):
+    queryset = Product.objects.all().order_by('-id')
+    parser_classes = [FormParser, MultiPartParser]
+    permission_classes = [IsAdminGroup,IsAuthenticated]
+    serializer_class = ProductGetSerializer
+    
+class ProductCreateView(CreateAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+    parser_classes = [FormParser, MultiPartParser]
+    permission_classes = [IsAdminGroup,IsAuthenticated]
 
-    def get(self , request):
-        data = Product.objects.all().order_by('-id')
-        serializer = ProductGetSerializer(data , many=True)
-        return Response(serializer.data)
+    def perform_create(self, serializer):
+        product_instance = serializer.save()
+        image_files = self.request.FILES.getlist('img')
+        for img in image_files:
+            image_serializer = ImageSerializer(data={'img': img})
+            if image_serializer.is_valid():
+                img_instance = image_serializer.save()
+                product_instance.img.add(img_instance)
 
-    def post(self , request):
-        image_files = request.FILES.getlist('img') # 
-        data = request.data.copy()
-        print(image_files)
-        serializer = ProductSerializer(data=data)
-        if serializer.is_valid():
-                product_instance = serializer.save()
-                for img in image_files:
-                    image_serializer = ImageSerializer(data={'img': img})
-                    if image_serializer.is_valid():
-                        img_instance = image_serializer.save()
-                        product_instance.img.add(img_instance)
-                return Response({'ok': True , 'data': serializer.data}, status=201)
-        return Response({'ok': False , 'message': serializer.errors}, status=400)
+class ProductRetrieveUpdateDeleteView(RetrieveUpdateDestroyAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+    parser_classes = [FormParser, MultiPartParser]
+    permission_classes = [IsAdminGroup,IsAuthenticated]
 
-      
+    def get_object(self):
+        from .models import Profile
+        return Profile.objects.get(pk=self.kwargs['pk'])
+    
 
-    def patch(self , request):
-        pass
-
-    def delete(self , request):
-        pass
+    def perform_update(self, serializer):
+        product_instance = serializer.save()
+        image_files = self.request.FILES.getlist('img')
+        for img in image_files:
+            image_serializer = ImageSerializer(data={'img': img})
+            if image_serializer.is_valid():
+                img_instance = image_serializer.save()
+                product_instance.img.add(img_instance)
