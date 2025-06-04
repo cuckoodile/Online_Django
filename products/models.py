@@ -9,7 +9,7 @@ class Product(models.Model):
     name = models.CharField(max_length=255, unique=True)
     description = models.TextField()
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='products')
-    price = models.DecimalField(max_digits=6,decimal_places=2,validators=[MinValueValidator(Decimal('0.01'))])
+    price = models.DecimalField(max_digits=8,decimal_places=2,validators=[MinValueValidator(Decimal('0.01'))])
     publisher = models.ForeignKey(User, on_delete=models.CASCADE, related_name='products', verbose_name='Publisher ID')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -60,7 +60,11 @@ class Specification(models.Model):
         unique_together = ('product', 'key', 'value', 'size')
 
     def __str__(self):
-        return f"{self.key.key}: {self.value} for {self.product.name}"
+        key_str = self.key.key if self.key else "No Key"
+        value_str = self.value if self.value else "No Value"
+        size_str = self.size.size if self.size else "No Size"
+        color_str = self.color.color if self.color else "No Color"
+        return f"{key_str}: {value_str} | Size: {size_str} | Color: {color_str}"
 
 class ProductComment(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='comments')

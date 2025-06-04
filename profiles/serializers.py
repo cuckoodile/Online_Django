@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
 from .models import Profile
 from core.serializers import UserSerializer
 
@@ -36,25 +37,15 @@ class ProfileSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ['id', 'user_id', 'timestamp']
 
-    def validate(self, data):
-        request = self.context.get('request')
-        if request and request.method == 'POST':
-            user_id = request.data.get('user_id')
-            username = request.data.get('username')
-            email = request.data.get('email')
-            password = request.data.get('password')
-            if not user_id and not username and not (email and password):
-                raise serializers.ValidationError(
-                    'You must provide either user_id, username, or username/email/password to create a profile.'
-                )
-        return data
-
     def get_full_name(self, obj):
-        if isinstance(obj, dict): 
-            return f"{obj.get('first_name', '')} {obj.get('last_name', '')}"
-        return f"{obj.first_name} {obj.last_name}"
+        if isinstance(obj, dict):
+            return f"{obj.get('first_name', '')} {obj.get('last_name', '')}".strip()
+        return f"{obj.first_name} {obj.last_name}".strip()
 
     def get_address(self, obj):
+        if isinstance(obj, dict):
+            return None
+        
         addresses = obj.addresses.all()
         if addresses.exists():
             address = addresses.first()
@@ -62,34 +53,50 @@ class ProfileSerializer(serializers.ModelSerializer):
             return AddressSerializer(address).data
         return None
 
-    def create(self, validated_data):
-        user_data = validated_data.pop('user', None)
-        from core.serializers import UserSerializer
-        validated_data['role'] = 'customer'
-        user = None
-        if isinstance(user_data, dict):
-            user_data['password_confirmation'] = user_data['password']
-            password = user_data['password']
-            user_serializer = UserSerializer(data=user_data)
-            user_serializer.is_valid(raise_exception=True)
-            user = user_serializer.save()
-            user.set_password(password)
-            user.save()
-        elif isinstance(user_data, User):
-            user = user_data
-        profile = Profile.objects.create(user=user, **validated_data)
-        from django.contrib.auth.models import Group
-        group, _ = Group.objects.get_or_create(name='Customer')
-        user.groups.clear()
-        user.groups.add(group)
-        return profile
 
-    def update(self, instance, validated_data):
-        validated_data.pop('role', None)
-        for attr, value in validated_data.items():
-            setattr(instance, attr, value)
-        instance.save()
-        return instance
+    def validate(self, data):
+        request = self.context.get('request')
+        if request and request.user.is_authenticated:
+            return data
+        
+        user_data = data.get('user', {})
+        if not all([user_data.get('username'), 
+                   user_data.get('email'), 
+                   user_data.get('password')]):
+            raise serializers.ValidationError(
+                'For new accounts, you must provide username, email and password'
+            )
+        return data
+
+    def create(self, validated_data):
+        request = self.context.get('request')
+        
+        if request and request.user.is_authenticated:
+            validated_data.pop('user', None)
+            profile = Profile.objects.create(
+                user=request.user,
+                **validated_data
+            )
+            return profile
+        else:
+            user_data = validated_data.pop('user')
+            
+            if User.objects.filter(username=user_data['username']).exists():
+                raise ValidationError({'username': 'This username is taken'})
+            if User.objects.filter(email=user_data['email']).exists():
+                raise ValidationError({'email': 'This email is already registered'})
+            
+            user = User.objects.create_user(
+                username=user_data['username'],
+                email=user_data['email'],
+                password=user_data['password']
+            )
+            
+            profile = Profile.objects.create(
+                user=user,
+                **validated_data
+            )
+            return profile
 
 class ProfileUpdateSerializer(serializers.ModelSerializer):
     class Meta:

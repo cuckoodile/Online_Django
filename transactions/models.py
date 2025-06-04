@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from address.models import Address
-
+from django.core.exceptions import ValidationError
 # Create your models here.
 class TransactionStatus(models.Model):
     name = models.CharField(max_length=50, unique=True)
@@ -33,6 +33,10 @@ class ProductTransaction(models.Model):
 
     def __str__(self):
         return f"{self.quantity} x {self.product.name} in Transaction #{self.transaction.id}"
+    
+    def clean(self):
+        if not self.products.exists():
+            raise ValidationError("A transaction must have at least one product")
 
 class Transaction(models.Model):
     status = models.ForeignKey(TransactionStatus, on_delete=models.PROTECT, related_name='transactions')
@@ -46,3 +50,6 @@ class Transaction(models.Model):
 
     def __str__(self):
         return f"Transaction #{self.id} - {self.type.name} (User: {self.user.username})"
+    def clean(self):
+        if not self.products.exists():
+            raise ValidationError("A transaction must have at least one product")

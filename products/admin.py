@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .forms import ProductAdminForm,SpecificationInlineForm
+from .forms import ProductAdminForm, SpecificationInlineForm
 from .models import Product, SpecificationName, Specification, ProductComment, SpecificationSize, SpecificationColor
 from transactions.models import Transaction, TransactionType, TransactionStatus, TransactionMethod, ProductTransaction
 from product_images.models import ImageUpload
@@ -8,8 +8,7 @@ class ProductSpecificationInline(admin.TabularInline):
     model = Specification
     form = SpecificationInlineForm
     extra = 1
-    autocomplete_fields = ['key','size','color']
-
+    autocomplete_fields = ['key', 'size', 'color']
 
 class ImageUploadInline(admin.TabularInline):
     model = ImageUpload
@@ -20,7 +19,18 @@ class ProductAdmin(admin.ModelAdmin):
     form = ProductAdminForm
     exclude = ('publisher', 'img')
     list_display = ('name', 'category', 'price', 'stock')
+    search_fields = ('name', 'category__name', 'description')
+    list_select_related = ('category',)
     inlines = [ProductSpecificationInline, ImageUploadInline]
+
+    def get_search_results(self, request, queryset, search_term):
+        queryset, use_distinct = super().get_search_results(request, queryset, search_term)
+        try:
+            if 'autocomplete' in request.path:
+                queryset = queryset.filter(stock__gt=0)
+        except:
+            pass
+        return queryset, use_distinct
 
     def save_model(self, request, obj, form, change):
         if not obj.pk:
@@ -57,5 +67,5 @@ class SpecificationColorAdmin(admin.ModelAdmin):
 
 admin.site.register(SpecificationSize, SpecificationSizeAdmin)
 admin.site.register(SpecificationName, SpecificationNameAdmin)
-admin.site.register(SpecificationColor,SpecificationColorAdmin)
+admin.site.register(SpecificationColor, SpecificationColorAdmin)
 admin.site.register(ProductComment)
