@@ -23,7 +23,7 @@ class TransactionType(models.Model):
     
 class ProductTransaction(models.Model):
     transaction = models.ForeignKey('Transaction', on_delete=models.CASCADE, related_name='product_transactions')
-    product = models.ForeignKey('products.Product', on_delete=models.CASCADE, related_name='product_transactions')
+    product = models.ForeignKey('products.Product', on_delete=models.CASCADE, related_name='product_transactions', verbose_name='Product')
     quantity = models.PositiveIntegerField(default=1)
     subtotal = models.DecimalField(max_digits=8, decimal_places=2)
 
@@ -41,8 +41,6 @@ class Transaction(models.Model):
     products = models.ManyToManyField('products.Product', through='ProductTransaction', related_name='transactions')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    
-    # AUTOMATIC
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='transactions', editable=False)
     address = models.ForeignKey(Address, on_delete=models.SET_NULL, null=True, blank=True, editable=False)
 

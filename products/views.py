@@ -16,6 +16,14 @@ class ProductListView(ListAPIView):
     parser_classes = [FormParser, MultiPartParser]
     permission_classes = []
     serializer_class = ProductGetSerializer
+
+class ProductListViewById(ListAPIView):
+    serializer_class = ProductGetSerializer
+    parser_classes = [FormParser, MultiPartParser]
+
+    def get_queryset(self):
+        product_id = self.kwargs['pk']
+        return Product.objects.filter(id=product_id).order_by('-id')
     
 class ProductCreateView(CreateAPIView):
     queryset = Product.objects.all()
@@ -37,11 +45,6 @@ class ProductRetrieveUpdateDeleteView(RetrieveUpdateDestroyAPIView):
     serializer_class = ProductSerializer
     parser_classes = [FormParser, MultiPartParser]
     permission_classes = [IsAdminGroup,IsAuthenticated]
-
-    def get_object(self):
-        from .models import Profile
-        return Profile.objects.get(pk=self.kwargs['pk'])
-    
 
     def perform_update(self, serializer):
         product_instance = serializer.save()

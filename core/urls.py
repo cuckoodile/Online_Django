@@ -11,7 +11,7 @@ from .views import UserView
 
 # API URL Endpoints
 from products.views import (
-    ProductListView, ProductCreateView, ProductRetrieveUpdateDeleteView,
+    ProductListView, ProductListViewById, ProductCreateView, ProductRetrieveUpdateDeleteView,
     ProductCommentListView, ProductCommentCreateView, ProductCommentRetrieveUpdateDeleteView,
     SpecificationListView, SpecificationCreateView, SpecificationRetrieveUpdateDeleteView,
 )
@@ -33,6 +33,7 @@ urlpatterns = [
     path('api/products/', ProductListView.as_view()),
     path('api/products/create/', ProductCreateView.as_view(), name='product-create'),
     path('api/products/<int:pk>/', ProductRetrieveUpdateDeleteView.as_view(), name='product-detail'),
+    path('api/products/details/<int:pk>/', ProductListViewById.as_view(), name='product-details'),
     # ProductComment endpoints
     path('product-comments/', ProductCommentListView.as_view(), name='productcomment-list'),
     path('product-comments/create/', ProductCommentCreateView.as_view(), name='productcomment-create'),

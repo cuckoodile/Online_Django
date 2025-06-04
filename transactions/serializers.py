@@ -7,6 +7,9 @@ class TransactionSerializer(serializers.ModelSerializer):
     user_email = serializers.EmailField(source='user.email', read_only=True)
     user_username = serializers.CharField(source='user.username', read_only=True)
     type_name = serializers.CharField(source='type.name', read_only=True)
+    subtotal = serializers.DecimalField(source='product_transactions.subtotal', max_digits=8, decimal_places=2, read_only=True)
+    products = serializers.CharField(source='product_transactions.product', read_only=True)
+    quantity = serializers.IntegerField(source='product_transactions.quantity', read_only=True)
 
     class Meta:
         model = Transaction
@@ -19,15 +22,15 @@ class TransactionSerializer(serializers.ModelSerializer):
             'user_username',
             'payment_method',
             'payment_method_name',
+            'subtotal',
             'type',
             'type_name',
             'address',
-            'amount',
-            'reference',
-            'timestamp',
-            'is_void'
+            'products',
+            'quantity',
         ]
-        read_only_fields = ['id', 'timestamp']
+        read_only_fields = ['id']
+        depth =1
 
     def create(self, validated_data):
         return Transaction.objects.create(**validated_data)
@@ -43,6 +46,10 @@ class TransactionSerializer(serializers.ModelSerializer):
         return None
 
 class TransactionCreateSerializer(serializers.ModelSerializer):
+    products = serializers.ListField(child=serializers.IntegerField(), write_only=True)
+    quantity = serializers.ListField(child=serializers.IntegerField(), write_only=True)
+    subtotal = serializers.ListField(child=serializers.DecimalField(max_digits=8, decimal_places=2), write_only=True)
+
     class Meta:
         model = Transaction
         fields = [
@@ -53,11 +60,35 @@ class TransactionCreateSerializer(serializers.ModelSerializer):
             'address',
             'amount',
             'reference',
-            'is_void'
+            'is_void',
+            'products',
+            'quantity',
+            'subtotal',
         ]
 
+    def validate(self, data):
+        products = data.get('products', [])
+        quantities = data.get('quantity', [])
+        subtotals = data.get('subtotal', [])
+        if not (len(products) == len(quantities) == len(subtotals)):
+            raise serializers.ValidationError('Products, quantity, and subtotal lists must have the same length.')
+        return data
+
     def create(self, validated_data):
-        return Transaction.objects.create(**validated_data)
+        products = validated_data.pop('products', [])
+        quantities = validated_data.pop('quantity', [])
+        subtotals = validated_data.pop('subtotal', [])
+        transaction = Transaction.objects.create(**validated_data)
+        # Assuming ProductTransaction is the related model
+        from .models import ProductTransaction
+        for product_id, qty, sub in zip(products, quantities, subtotals):
+            ProductTransaction.objects.create(
+                transaction=transaction,
+                product_id=product_id,
+                quantity=qty,
+                subtotal=sub
+            )
+        return transaction
 
     def update(self, instance, validated_data):
         for attr, value in validated_data.items():
