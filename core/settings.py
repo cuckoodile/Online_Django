@@ -151,8 +151,7 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
-MEDIA_ROOT = '/home/dan/mysite/media/'
-
+MEDIA_ROOT = '/home/sube_ian/Documents/projects/Django/media/'
 MEDIA_URL = '/media/'
 
 # Default primary key field type
