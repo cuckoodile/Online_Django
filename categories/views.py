@@ -2,13 +2,14 @@ from django.shortcuts import render
 from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView,CreateAPIView
 from categories.models import Category
 from categories.serializers import CategorySerializer
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated,AllowAny
 from profiles.permissions import IsAdminGroup
 # Create your views here.
 
 class CategoryListCreateView(ListAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
+    permission_classes = [AllowAny]
     depth = 2
 
     def perform_create(self, serializer):
