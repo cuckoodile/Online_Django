@@ -7,20 +7,21 @@ from .models import Product, ProductComment, Specification
 # from product_review.models import ProductReview
 from .serializers import ProductGetSerializer , ProductSerializer , ProductCommentSerializer, SpecificationSerializer
 from product_images.serializers import ImageSerializer
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated,AllowAny
 from profiles.permissions import IsAdminGroup, IsCustomerGroup, IsShipperGroup, IsOrderTrackerGroup
 
 # Create your views here.
 class ProductListView(ListAPIView):
     queryset = Product.objects.all().order_by('-id')
     parser_classes = [FormParser, MultiPartParser]
-    permission_classes = []
+    permission_classes = [AllowAny]
     serializer_class = ProductGetSerializer
     depyth = 2
 
 class ProductListViewById(ListAPIView):
     serializer_class = ProductGetSerializer
     parser_classes = [FormParser, MultiPartParser]
+    permission_classes = [AllowAny]
     depyth = 1
 
     def get_queryset(self):
