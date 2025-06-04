@@ -16,10 +16,12 @@ class ProductListView(ListAPIView):
     parser_classes = [FormParser, MultiPartParser]
     permission_classes = []
     serializer_class = ProductGetSerializer
+    depyth = 1
 
 class ProductListViewById(ListAPIView):
     serializer_class = ProductGetSerializer
     parser_classes = [FormParser, MultiPartParser]
+    depyth = 1
 
     def get_queryset(self):
         product_id = self.kwargs['pk']
