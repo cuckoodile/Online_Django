@@ -6,6 +6,7 @@ class CartSerializer(serializers.ModelSerializer):
         model = Cart
         fields = '__all__'
         read_only_fields = ['user']
+        depth = 1
 
     def create(self, validated_data):
         request = self.context.get('request')

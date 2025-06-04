@@ -56,27 +56,35 @@ class ProductSerializer(serializers.ModelSerializer):
         return None
   
 
-class ProductGetSerializer(serializers.ModelSerializer):
-    images = ImageSerializer(many=True, read_only=True)
-    comments = 'ProductCommentSerializer(many=True, read_only=True)'
-    specifications = 'SpecificationSerializer(many=True, read_only=True)'
-    class Meta:
-        model = Product
-        fields = ['id', 'name', 'price', 'description', 'stock', 'category', 'images', 'comments' , 'specifications']
-        depth = 2
-
 
 class SpecificationSerializer(serializers.ModelSerializer):
+    specification_name = serializers.SerializerMethodField()
+    value = serializers.SerializerMethodField()
+    size = serializers.SerializerMethodField()
+    color = serializers.SerializerMethodField()
+
     class Meta:
-        specification_name = serializers.CharField(source='specifications.name', read_only=True)
         model = Specification
-        fields = ['product', 'specification_name', 'value']
+        fields = ['specification_name', 'value', 'size', 'color']
+
+    def get_specification_name(self, obj):
+        return {"Key": obj.key.key} if obj.key else {}
+
+    def get_value(self, obj):
+        return {"value": obj.value} if obj.value else {}
+
+    def get_size(self, obj):
+        return {"size": obj.size.size} if obj.size else {}
+
+    def get_color(self, obj):
+        return {"color": obj.color.color} if obj.color else {}
 
 
 class ProductCommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductComment
         fields = '__all__'
+        depth = 2
 
     def create(self, validated_data):
         return ProductComment.objects.create(**validated_data)
@@ -90,3 +98,24 @@ class ProductCommentSerializer(serializers.ModelSerializer):
     def delete(self, instance):
         instance.delete()
         return None
+
+class ProductGetSerializer(serializers.ModelSerializer):
+    images = ImageSerializer(many=True, read_only=True)
+    comments = ProductCommentSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Product
+        fields = ['id', 'name', 'price', 'description', 'stock', 'category', 'images', 'comments', 'specification']
+        depth = 2
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        specifications = instance.specification.all()
+        # Create a key-value dict for specifications
+        data['specification'] = {
+            s.key.key if s.key else "": s.value if s.value else ""
+            for s in specifications if s.key
+        }
+        data['colors'] = [SpecificationSerializer(s).data['color'] for s in specifications if SpecificationSerializer(s).data['color']]
+        data['sizes'] = [SpecificationSerializer(s).data['size'] for s in specifications if SpecificationSerializer(s).data['size']]
+        return data

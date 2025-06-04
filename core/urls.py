@@ -19,7 +19,7 @@ from address.views import AddressListView, AddressDetailView, AddressCreateView
 from cart.views import CartListView, CartDetailView, CartCreateView
 from categories.views import CategoryListCreateView, CategoryDetailView
 from profiles.views import ProfileListView,ProfileCreateView,ProfileDetailView,AdminProfileListCreateView, AdminProfileDetailView
-from transactions.views import TransactionListeView, TransactionDetailView, TransactionCreateView
+from transactions.views import TransactionListeView, TransactionDetailView, TransactionCreateView, TransactionListViewByID
 
 
 urlpatterns = [
@@ -67,7 +67,8 @@ urlpatterns = [
     path('api/admin/profiles/',AdminProfileListCreateView.as_view(), name='admin-profile-list-create'),
     path('api/admin/profiles/<int:pk>/', AdminProfileDetailView.as_view(), name='admin-profile-detail'),
     # API Endpoints for Transactions
-    path('api/transactions/', TransactionListeView.as_view(), name='transaction-list-create'),
+    path('api/transactions/', TransactionListViewByID.as_view(), name='transaction-list'),
+    path('api/transactions/details/<int:pk>', TransactionListeView.as_view(), name='transaction-list-by-id'),
     path('api/transactions/create/', TransactionCreateView.as_view(), name='transaction-create'),
     path('api/transactions/<int:pk>/', TransactionDetailView.as_view(), name='transaction-detail'),
 ]

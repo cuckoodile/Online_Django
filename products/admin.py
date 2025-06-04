@@ -1,13 +1,15 @@
 from django.contrib import admin
-from .forms import ProductAdminForm
-from .models import Product, SpecificationName, Specification, ProductComment
+from .forms import ProductAdminForm,SpecificationInlineForm
+from .models import Product, SpecificationName, Specification, ProductComment, SpecificationSize, SpecificationColor
 from transactions.models import Transaction, TransactionType, TransactionStatus, TransactionMethod, ProductTransaction
 from product_images.models import ImageUpload
 
 class ProductSpecificationInline(admin.TabularInline):
     model = Specification
+    form = SpecificationInlineForm
     extra = 1
-    autocomplete_fields = ['name']
+    autocomplete_fields = ['key','size','color']
+
 
 class ImageUploadInline(admin.TabularInline):
     model = ImageUpload
@@ -45,7 +47,15 @@ class ProductAdmin(admin.ModelAdmin):
         return form
 
 class SpecificationNameAdmin(admin.ModelAdmin):
-    search_fields = ['name']
+    search_fields = ['key']
 
+class SpecificationSizeAdmin(admin.ModelAdmin):
+    search_fields = ['size']
+
+class SpecificationColorAdmin(admin.ModelAdmin):
+    search_fields = ['color']
+
+admin.site.register(SpecificationSize, SpecificationSizeAdmin)
 admin.site.register(SpecificationName, SpecificationNameAdmin)
+admin.site.register(SpecificationColor,SpecificationColorAdmin)
 admin.site.register(ProductComment)

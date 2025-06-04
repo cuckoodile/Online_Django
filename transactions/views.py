@@ -9,8 +9,13 @@ from profiles.permissions import IsAdminGroup
 class TransactionListeView(ListAPIView):
     queryset = Transaction.objects.all()
     serializer_class = TransactionSerializer
-    permission_classes = [IsAuthenticated,IsAdminGroup]
+    permission_classes = [IsAuthenticated]
     depth = 2
+
+class TransactionListViewByID(ListAPIView):
+    queryset = Transaction.objects.all()
+    serializer_class = TransactionSerializer
+    permission_classes = [IsAuthenticated]
 
 class TransactionCreateView(CreateAPIView):
     queryset = Transaction.objects.all()

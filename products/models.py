@@ -1,4 +1,6 @@
 from django.db import models
+from django.core.validators import MinValueValidator
+from decimal import Decimal
 from django.contrib.auth.models import User
 from categories.models import Category
 from product_images.models import ImageUpload
@@ -7,7 +9,7 @@ class Product(models.Model):
     name = models.CharField(max_length=255, unique=True)
     description = models.TextField()
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='products')
-    price = models.DecimalField(max_digits=10, decimal_places=2)
+    price = models.DecimalField(max_digits=6,decimal_places=2,validators=[MinValueValidator(Decimal('0.01'))])
     publisher = models.ForeignKey(User, on_delete=models.CASCADE, related_name='products', verbose_name='Publisher ID')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -31,21 +33,34 @@ class Product(models.Model):
         ]
 
 class SpecificationName(models.Model):
-    name = models.CharField(max_length=100)
+    key = models.CharField(max_length=100)
 
     def __str__(self):
-        return f"{self.name}"
+        return f"{self.key}"
+    
+class SpecificationSize(models.Model):
+    size = models.CharField(max_length=100)
+
+    def __str__(self):
+        return f"{self.size}"
+    
+class SpecificationColor(models.Model):
+    color = models.CharField(max_length=100)
+
+    def __str__ (self):
+        return f"{self.color}"
     
 class Specification(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='specifications')
-    name = models.ForeignKey(SpecificationName, on_delete=models.CASCADE, related_name='specifications')
-    value = models.CharField(max_length=100)
-
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='specification')
+    key = models.ForeignKey(SpecificationName, on_delete=models.CASCADE, related_name='specification',null=True,blank=True)
+    value = models.CharField(max_length=100,null=True,blank=True)
+    size = models.ForeignKey(SpecificationSize, on_delete=models.CASCADE, related_name='specification',null=True,blank=True)
+    color = models.ForeignKey(SpecificationColor, on_delete=models.CASCADE, related_name='specification',null=True,blank=True)
     class Meta:
-        unique_together = ('product', 'name', 'value')
+        unique_together = ('product', 'key', 'value', 'size')
 
     def __str__(self):
-        return f"{self.name.name}: {self.value} for {self.product.name}"
+        return f"{self.key.key}: {self.value} for {self.product.name}"
 
 class ProductComment(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='comments')
