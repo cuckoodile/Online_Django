@@ -9,6 +9,7 @@ from profiles.permissions import IsAdminGroup
 class CategoryListCreateView(ListAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
+    depth = 2
 
     def perform_create(self, serializer):
         serializer.save()

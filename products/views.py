@@ -16,7 +16,7 @@ class ProductListView(ListAPIView):
     parser_classes = [FormParser, MultiPartParser]
     permission_classes = []
     serializer_class = ProductGetSerializer
-    depyth = 1
+    depyth = 2
 
 class ProductListViewById(ListAPIView):
     serializer_class = ProductGetSerializer

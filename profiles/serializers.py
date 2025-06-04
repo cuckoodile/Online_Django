@@ -14,6 +14,7 @@ class ProfileSerializer(serializers.ModelSerializer):
         allow_blank=True
     )
     role = serializers.CharField(source='profile.role', read_only=True) 
+    address = serializers.SerializerMethodField()
 
     class Meta:
         model = Profile
@@ -26,6 +27,7 @@ class ProfileSerializer(serializers.ModelSerializer):
             'first_name',
             'last_name',
             'full_name',
+            'address',
             'role',
             'contact_number',
             'profile_image',
@@ -51,6 +53,14 @@ class ProfileSerializer(serializers.ModelSerializer):
         if isinstance(obj, dict): 
             return f"{obj.get('first_name', '')} {obj.get('last_name', '')}"
         return f"{obj.first_name} {obj.last_name}"
+
+    def get_address(self, obj):
+        addresses = obj.addresses.all()
+        if addresses.exists():
+            address = addresses.first()
+            from address.serializers import AddressSerializer
+            return AddressSerializer(address).data
+        return None
 
     def create(self, validated_data):
         user_data = validated_data.pop('user', None)
@@ -113,6 +123,7 @@ class AdminProfileSerializer(serializers.ModelSerializer):
         style={'input_type': 'password'}
     )
 
+    address = serializers.SerializerMethodField()
     class Meta:
         model = Profile
         fields = [
@@ -124,6 +135,7 @@ class AdminProfileSerializer(serializers.ModelSerializer):
             'first_name',
             'last_name',
             'full_name',
+            'address',
             'role',
             'contact_number',
             'profile_image',
@@ -134,6 +146,12 @@ class AdminProfileSerializer(serializers.ModelSerializer):
 
     def get_full_name(self, obj):
         return obj.full_name
+
+    def get_address(self, obj):
+        address_obj = getattr(obj, 'address', None)
+        if address_obj:
+            return str(address_obj)
+        return None
 
     def create(self, validated_data):
         user_data = validated_data.pop('user', None)
@@ -217,7 +235,6 @@ class AdminProfileUpdateSerializer(serializers.ModelSerializer):
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
         instance.save()
-        # Sync user group with role
         user = getattr(instance, 'user', None)
         if user:
             from django.contrib.auth.models import Group

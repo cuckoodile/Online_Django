@@ -9,6 +9,7 @@ class CartListView(ListAPIView):
     queryset = Cart.objects.all()
     serializer_class = CartSerializer
     permission_classes = [IsAuthenticated]
+    depth = 2
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)

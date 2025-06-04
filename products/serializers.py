@@ -10,7 +10,7 @@ class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = ['id', 'name', 'price', 'description', 'stock', 'category', 'images']
-        depth = 1
+        depth = 2
 
     def create(self, validated_data):
         stock = validated_data.pop('stock', None)
@@ -63,12 +63,14 @@ class ProductGetSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = ['id', 'name', 'price', 'description', 'stock', 'category', 'images', 'comments' , 'specifications']
-        depth = 1
+        depth = 2
+
 
 class SpecificationSerializer(serializers.ModelSerializer):
     class Meta:
+        specification_name = serializers.CharField(source='specifications.name', read_only=True)
         model = Specification
-        fields = '__all__'
+        fields = ['product', 'specification_name', 'value']
 
 
 class ProductCommentSerializer(serializers.ModelSerializer):

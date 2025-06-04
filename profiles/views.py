@@ -13,6 +13,7 @@ from .permissions import IsAdminGroup
 class ProfileListView(ListAPIView):
     serializer_class = ProfileSerializer
     permission_classes = [IsAuthenticated]
+    depth = 3
 
     def get_queryset(self):
         return Profile.objects.filter(user=self.request.user)
@@ -30,6 +31,7 @@ class ProfileCreateView(CreateAPIView):
 class ProfileDetailView(RetrieveUpdateDestroyAPIView):
     serializer_class = ProfileUpdateSerializer
     permission_classes = [IsAuthenticated]
+    depth = 1
 
     def get_object(self):
         return self.request.user.profile
@@ -38,6 +40,7 @@ class AdminProfileListCreateView(ListCreateAPIView):
     queryset = Profile.objects.all()
     serializer_class = AdminProfileSerializer
     permission_classes = [IsAuthenticated, IsAdminGroup]
+    depth = 2
 
     def perform_create(self, serializer):
         serializer.save()
@@ -46,6 +49,7 @@ class AdminProfileDetailView(RetrieveUpdateDestroyAPIView):
     queryset = Profile.objects.all()
     serializer_class = AdminProfileUpdateSerializer
     permission_classes = [IsAuthenticated, IsAdminGroup]
+    depth = 2
 
     def get_object(self):
         from .models import Profile

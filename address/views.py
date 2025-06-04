@@ -8,6 +8,7 @@ class AddressListView(ListAPIView):
     queryset = Address.objects.all()
     serializer_class = AddressSerializer
     permission_classes = [IsAuthenticated]
+    depth = 2
 
 class AddressCreateView(CreateAPIView):
     queryset = Address.objects.all()

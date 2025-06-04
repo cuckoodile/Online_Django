@@ -7,9 +7,6 @@ class TransactionSerializer(serializers.ModelSerializer):
     user_email = serializers.EmailField(source='user.email', read_only=True)
     user_username = serializers.CharField(source='user.username', read_only=True)
     type_name = serializers.CharField(source='type.name', read_only=True)
-    subtotal = serializers.DecimalField(source='product_transactions.subtotal', max_digits=8, decimal_places=2, read_only=True)
-    products = serializers.CharField(source='product_transactions.product', read_only=True)
-    quantity = serializers.IntegerField(source='product_transactions.quantity', read_only=True)
 
     class Meta:
         model = Transaction
@@ -22,16 +19,12 @@ class TransactionSerializer(serializers.ModelSerializer):
             'user_username',
             'payment_method',
             'payment_method_name',
-            'subtotal',
             'type',
             'type_name',
-            'address',
-            'products',
-            'quantity',
         ]
         read_only_fields = ['id']
         depth =1
-
+    
     def create(self, validated_data):
         return Transaction.objects.create(**validated_data)
 
