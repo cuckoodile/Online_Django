@@ -6,7 +6,7 @@ from rest_framework.parsers import FormParser , MultiPartParser
 from .models import Product, ProductComment, Specification
 # from product_review.models import ProductReview
 from .serializers import ProductGetSerializer , ProductSerializer , ProductCommentSerializer, SpecificationSerializer
-from product_image.serializers import ImageSerializer
+from product_images.serializers import ImageSerializer
 from rest_framework.permissions import IsAuthenticated
 from profiles.permissions import IsAdminGroup, IsCustomerGroup, IsShipperGroup, IsOrderTrackerGroup
 

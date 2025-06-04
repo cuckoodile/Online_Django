@@ -9,7 +9,6 @@ from profiles.permissions import IsAdminGroup
 class CategoryListCreateView(ListAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
         serializer.save()

@@ -55,15 +55,16 @@ class ProfileSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         user_data = validated_data.pop('user', None)
         from core.serializers import UserSerializer
-        # Always set role to 'customer' for normal profile creation
         validated_data['role'] = 'customer'
         user = None
         if isinstance(user_data, dict):
-            # Add password_confirmation for UserSerializer
             user_data['password_confirmation'] = user_data['password']
+            password = user_data['password']
             user_serializer = UserSerializer(data=user_data)
             user_serializer.is_valid(raise_exception=True)
             user = user_serializer.save()
+            user.set_password(password)
+            user.save()
         elif isinstance(user_data, User):
             user = user_data
         profile = Profile.objects.create(user=user, **validated_data)
@@ -79,7 +80,6 @@ class ProfileSerializer(serializers.ModelSerializer):
             setattr(instance, attr, value)
         instance.save()
         return instance
-
 
 class ProfileUpdateSerializer(serializers.ModelSerializer):
     class Meta:
@@ -139,17 +139,33 @@ class AdminProfileSerializer(serializers.ModelSerializer):
         user_data = validated_data.pop('user', None)
         role = validated_data.get('role', 'customer')
         from core.serializers import UserSerializer
+        from django.contrib.auth.models import User
         user = None
         if isinstance(user_data, dict):
-            user_data['password_confirmation'] = user_data['password']
-            user_serializer = UserSerializer(data=user_data)
-            user_serializer.is_valid(raise_exception=True)
-            user = user_serializer.save()
+            username = user_data.get('username')
+            email = user_data.get('email')
+            user_qs = User.objects.filter(username=username)
+            if not user_qs.exists() and email:
+                user_qs = User.objects.filter(email=email)
+            if user_qs.exists():
+                user = user_qs.first()
+                from .models import Profile
+                if Profile.objects.filter(user=user).exists():
+                    raise serializers.ValidationError({'user': 'A profile for this user already exists.'})
+            else:
+                user_data['password_confirmation'] = user_data['password']
+                user_serializer = UserSerializer(data=user_data)
+                user_serializer.is_valid(raise_exception=True)
+                user = user_serializer.save()
+                password = user_data['password']
+                user.set_password(password)
+                user.save()
         elif isinstance(user_data, User):
             user = user_data
+            from .models import Profile
+            if Profile.objects.filter(user=user).exists():
+                raise serializers.ValidationError({'user': 'A profile for this user already exists.'})
         from .models import Profile
-        if user and Profile.objects.filter(user=user).exists():
-            raise serializers.ValidationError({'user': 'A profile for this user already exists.'})
         profile = Profile.objects.create(user=user, **validated_data) if user else Profile.objects.create(**validated_data)
         if user:
             from django.contrib.auth.models import Group

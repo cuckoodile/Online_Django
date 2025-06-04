@@ -1,14 +1,16 @@
 from rest_framework import serializers
 from .models import Product, ProductComment, Specification
-from product_image.serializers import ImageSerializer
+from product_images.serializers import ImageSerializer
 from transactions.models import Transaction, ProductTransaction
 # from product_review.models import ProductReview
 
 class ProductSerializer(serializers.ModelSerializer):
     stock = serializers.IntegerField(write_only=True, required=False)
+    images = ImageSerializer(many=True, read_only=True)
     class Meta:
         model = Product
-        fields = ['id', 'name', 'price', 'description', 'stock']
+        fields = ['id', 'name', 'price', 'description', 'stock', 'category', 'images']
+        depth = 1
 
     def create(self, validated_data):
         stock = validated_data.pop('stock', None)
@@ -55,9 +57,12 @@ class ProductSerializer(serializers.ModelSerializer):
   
 
 class ProductGetSerializer(serializers.ModelSerializer):
+    images = ImageSerializer(many=True, read_only=True)
+    comments = 'ProductCommentSerializer(many=True, read_only=True)'
+    specifications = 'SpecificationSerializer(many=True, read_only=True)'
     class Meta:
         model = Product
-        fields = "__all__"
+        fields = ['id', 'name', 'price', 'description', 'stock', 'category', 'images', 'comments' , 'specifications']
         depth = 1
 
 class SpecificationSerializer(serializers.ModelSerializer):
@@ -65,21 +70,6 @@ class SpecificationSerializer(serializers.ModelSerializer):
         model = Specification
         fields = '__all__'
 
-# class ProductReviewSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = ProductReview
-#         fields = '__all__'
-        
-#     def create(self, validated_data):
-#         return ProductReview.objects.create(**validated_data)
-#     def update(self, instance, validated_data):
-#         for attr, value in validated_data.items():
-#             setattr(instance, attr, value)
-#         instance.save()
-#         return instance
-#     def delete(self, instance):
-#         instance.delete()
-#         return None
 
 class ProductCommentSerializer(serializers.ModelSerializer):
     class Meta:

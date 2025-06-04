@@ -4,6 +4,8 @@ from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
 )
+from django.conf.urls.static import static
+from django.conf import settings
 from rest_framework_simplejwt.views import TokenVerifyView
 from .views import UserView
 
@@ -12,13 +14,13 @@ from products.views import (
     ProductListView, ProductCreateView, ProductRetrieveUpdateDeleteView,
     ProductCommentListView, ProductCommentCreateView, ProductCommentRetrieveUpdateDeleteView,
     SpecificationListView, SpecificationCreateView, SpecificationRetrieveUpdateDeleteView,
-    # ProductReviewListView, ProductReviewCreateView, ProductReviewRetrieveUpdateDeleteView
 )
 from address.views import AddressListView, AddressDetailView, AddressCreateView
 from cart.views import CartListView, CartDetailView, CartCreateView
 from categories.views import CategoryListCreateView, CategoryDetailView
 from profiles.views import ProfileListView,ProfileCreateView,ProfileDetailView,AdminProfileListCreateView, AdminProfileDetailView
 from transactions.views import TransactionListeView, TransactionDetailView, TransactionCreateView
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -68,3 +70,5 @@ urlpatterns = [
     path('api/transactions/create/', TransactionCreateView.as_view(), name='transaction-create'),
     path('api/transactions/<int:pk>/', TransactionDetailView.as_view(), name='transaction-detail'),
 ]
+
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -13,7 +13,7 @@ class Profile(models.Model):
     first_name = models.CharField(max_length=100, blank=True)
     last_name = models.CharField(max_length=100, blank=True)
     contact_number = models.CharField(max_length=20, blank=True)
-    profile_image = models.ImageField(upload_to='profile_images/', null=True, blank=True)
+    profile_image = models.ImageField(upload_to='media/profile_image', null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     role = models.CharField(max_length=32, choices=ROLE_CHOICES)

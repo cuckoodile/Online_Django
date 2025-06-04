@@ -1,6 +1,6 @@
 from django import forms
 from .models import Product
-from product_image.models import ImageUpload
+from product_images.models import ImageUpload
 
 class ProductAdminForm(forms.ModelForm):
     stock = forms.IntegerField(required=False, min_value=0, help_text="Initial stock (inbound transaction)")

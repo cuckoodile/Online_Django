@@ -2,7 +2,7 @@ from django.contrib import admin
 from .forms import ProductAdminForm
 from .models import Product, SpecificationName, Specification, ProductComment
 from transactions.models import Transaction, TransactionType, TransactionStatus, TransactionMethod, ProductTransaction
-from product_image.models import ImageUpload
+from product_images.models import ImageUpload
 
 class ProductSpecificationInline(admin.TabularInline):
     model = Specification

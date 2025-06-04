@@ -1,13 +1,28 @@
-from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.generics import RetrieveUpdateDestroyAPIView
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from django.contrib.auth.models import User
 from .serializers import UserSerializer
 
-class UserView(ListCreateAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-    # The generic view will handle GET (list) and POST (create) requests.
+class UserView(APIView):
+
+    def get(self ,request ,  format=None):
+        users = User.objects.all()
+        serializer = UserSerializer(users , many=True)
+        return Response({'ok': True , 'data': serializer.data} , status=200)
+
+    def post(self , request , format=None):
+        serializer = UserSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            user = User.objects.get(username=request.data['username'])
+            user.set_password(request.data['password'])
+            user.save()
+
+
+            return Response({'ok': True , 'data' : serializer.data} , status=200)
+        return Response({'ok': False , 'errors': serializer.errors},status=400)
 
 class UserDetailView(RetrieveUpdateDestroyAPIView):
     def get(self , request , format=None):
