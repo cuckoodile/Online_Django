@@ -7,7 +7,7 @@ from rest_framework_simplejwt.views import (
 from django.conf.urls.static import static
 from django.conf import settings
 from rest_framework_simplejwt.views import TokenVerifyView
-from .views import UserView
+from .views import UserView, UserDetailView
 
 # API URL Endpoints
 from products.views import (
@@ -28,6 +28,7 @@ urlpatterns = [
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/token/verify/', TokenVerifyView.as_view(), name='token_verify'),
     path('api/users/', UserView.as_view(), name='user-list'),
+    path('api/users/<int:pk>/', UserDetailView.as_view(), name='user-detail'),
 
     # API Endpoints for Products
     path('api/products/', ProductListView.as_view()),
