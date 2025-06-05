@@ -1,15 +1,20 @@
 from rest_framework import serializers
 from cart.models import Cart
 from products.models import Product
+from products.serializers import ProductSerializer  # Make sure this exists
+
 class CartSerializer(serializers.ModelSerializer):
-    product = serializers.PrimaryKeyRelatedField(
+    product = ProductSerializer(read_only=True)
+    product_id = serializers.PrimaryKeyRelatedField(
         queryset=Product.objects.all(),
+        source='product',
+        write_only=True,
         label="Select Product",
     )
-    
+
     class Meta:
         model = Cart
-        fields = ['id', 'user', 'product', 'quantity']
+        fields = ['id', 'user', 'product', 'product_id', 'quantity']
         depth = 1
         extra_kwargs = {
             'user': {'read_only': True}
